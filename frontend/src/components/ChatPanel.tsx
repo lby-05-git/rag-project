@@ -17,7 +17,6 @@ import {
   SendOutlined,
   UserOutlined,
   RobotOutlined,
-  EditOutlined,
 } from '@ant-design/icons';
 import { query as apiQuery } from '../api/client';
 import type { SourceItem } from '../api/client';
@@ -55,11 +54,8 @@ export default function ChatPanel({ messages, setMessages }: Props) {
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
 
-  // 当 messages 被清空时重置 sessionId
   useEffect(() => {
-    if (messages.length === 0) {
-      setSessionId(null);
-    }
+    if (messages.length === 0) setSessionId(null);
   }, [messages.length]);
 
   const handleSend = async () => {
@@ -77,25 +73,10 @@ export default function ChatPanel({ messages, setMessages }: Props) {
         similarity_threshold: threshold,
         session_id: sessionId,
       });
-      // 保存 session_id 用于后续追问
-      if (res.session_id) {
-        setSessionId(res.session_id);
-      }
+      if (res.session_id) setSessionId(res.session_id);
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          content: res.answer,
-          sources: res.sources,
-        },
-      ]);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: res.answer,
-          sources: res.sources,
-        },
+        { role: 'assistant', content: res.answer, sources: res.sources },
       ]);
     } catch (err: any) {
       const detail =
@@ -103,10 +84,7 @@ export default function ChatPanel({ messages, setMessages }: Props) {
       message.error(detail);
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          content: `错误：${detail}`,
-        },
+        { role: 'assistant', content: `错误：${detail}` },
       ]);
     } finally {
       setLoading(false);
@@ -141,17 +119,18 @@ export default function ChatPanel({ messages, setMessages }: Props) {
 
       {/* 右侧对话区 */}
       <Col xs={24} sm={24} md={16} lg={18} xl={19}>
-        <Card
-          bodyStyle={{ padding: 0 }}
+        <div
           style={{
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
+            background: '#fff',
             borderRadius: 8,
             overflow: 'hidden',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
           }}
         >
-          {/* 消息列表 */}
+          {/* 消息列表 — 可滚动 */}
           <div
             style={{
               flex: 1,
@@ -186,7 +165,6 @@ export default function ChatPanel({ messages, setMessages }: Props) {
                   flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
                 }}
               >
-                {/* 头像 */}
                 <Avatar
                   size={36}
                   icon={msg.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
@@ -197,15 +175,12 @@ export default function ChatPanel({ messages, setMessages }: Props) {
                     border: msg.role === 'assistant' ? '1px solid #e8e8e8' : 'none',
                   }}
                 />
-
-                {/* 气泡 */}
                 <div style={{ maxWidth: '75%' }}>
                   <div
                     style={{
                       padding: '10px 14px',
                       borderRadius: 12,
-                      background:
-                        msg.role === 'user' ? '#1677ff' : '#f5f5f5',
+                      background: msg.role === 'user' ? '#1677ff' : '#f5f5f5',
                       color: msg.role === 'user' ? '#fff' : '#000',
                       borderTopRightRadius: msg.role === 'user' ? 4 : 12,
                       borderTopLeftRadius: msg.role === 'assistant' ? 4 : 12,
@@ -225,14 +200,9 @@ export default function ChatPanel({ messages, setMessages }: Props) {
                       <SourceCitation sources={msg.sources} />
                     )}
                   </div>
-
-                  {/* 来源标记 */}
                   {msg.sources && msg.sources.length > 0 && (
                     <div style={{ marginTop: 4, paddingLeft: 4 }}>
-                      <Text
-                        type="secondary"
-                        style={{ fontSize: 11 }}
-                      >
+                      <Text type="secondary" style={{ fontSize: 11 }}>
                         基于 {msg.sources.length} 份来源
                       </Text>
                     </div>
@@ -241,15 +211,10 @@ export default function ChatPanel({ messages, setMessages }: Props) {
               </div>
             ))}
 
-            {/* 思考中指示器 */}
             {loading && (
               <div
                 className="message-enter"
-                style={{
-                  display: 'flex',
-                  marginBottom: 20,
-                  gap: 12,
-                }}
+                style={{ display: 'flex', marginBottom: 20, gap: 12 }}
               >
                 <Avatar
                   size={36}
@@ -282,12 +247,13 @@ export default function ChatPanel({ messages, setMessages }: Props) {
             <div ref={bottomRef} />
           </div>
 
-          {/* 输入区 */}
+          {/* 输入区 — 固定底部，不随滚动移动 */}
           <div
             style={{
               padding: '12px 16px',
               borderTop: '1px solid #f0f0f0',
-              background: '#fafafa',
+              background: '#fff',
+              flexShrink: 0,
             }}
           >
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
@@ -312,16 +278,12 @@ export default function ChatPanel({ messages, setMessages }: Props) {
                   icon={<SendOutlined />}
                   onClick={handleSend}
                   loading={loading}
-                  style={{
-                    height: 52,
-                    width: 52,
-                    borderRadius: 8,
-                  }}
+                  style={{ height: 52, width: 52, borderRadius: 8 }}
                 />
               </Tooltip>
             </div>
           </div>
-        </Card>
+        </div>
       </Col>
     </Row>
   );
