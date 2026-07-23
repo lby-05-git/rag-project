@@ -14,6 +14,7 @@ class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, description="用户问题")
     chunk_size: int = Field(default=400, ge=200, le=1000, description="分块大小")
     similarity_threshold: float = Field(default=0.3, ge=0.0, le=1.0, description="相似度阈值")
+    session_id: Optional[int] = Field(default=None, description="会话ID，续传历史时使用")
 
 
 class SourceItem(BaseModel):
@@ -24,6 +25,7 @@ class SourceItem(BaseModel):
 
 
 class QueryResponse(BaseModel):
+    session_id: Optional[int] = None
     answer: str
     sources: List[SourceItem]
 

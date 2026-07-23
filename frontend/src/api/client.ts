@@ -9,6 +9,7 @@ export interface QueryRequest {
   question: string;
   chunk_size?: number;
   similarity_threshold?: number;
+  session_id?: number | null;
 }
 
 export interface SourceItem {
@@ -19,6 +20,7 @@ export interface SourceItem {
 }
 
 export interface QueryResponse {
+  session_id?: number | null;
   answer: string;
   sources: SourceItem[];
 }

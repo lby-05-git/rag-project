@@ -49,6 +49,8 @@ app.add_middleware(
 
 store: Optional["FAISS"] = None  # type: ignore
 documents: List[dict] = []
+sessions: List[dict] = []       # 问答会话列表
+session_id_counter: int = 0     # 自增会话 ID
 
 DATA_DIR = Path("data")
 FAISS_DIR = DATA_DIR / "faiss_index"
@@ -149,8 +151,8 @@ async def upload_file(
 
 @app.post("/query", response_model=QueryResponse)
 async def query(req: QueryRequest):
-    """Ask a question and get an answer with source citations."""
-    global store
+    """Ask a question, get an answer, and save to history."""
+    global store, sessions, session_id_counter
 
     if store is None:
         raise HTTPException(400, "请先上传研报")
@@ -165,10 +167,50 @@ async def query(req: QueryRequest):
             k=5,
             similarity_threshold=req.similarity_threshold,
         )
-        return QueryResponse(
+        response = QueryResponse(
             answer=result["answer"],
             sources=[SourceItem(**s) for s in result["sources"]],
         )
+
+        # 保存到历史记录
+        now = datetime.now(timezone.utc)
+        # 查找或创建会话
+        session_id = req.session_id
+        if session_id is None:
+            session_id_counter += 1
+            session_id = session_id_counter
+            sessions.append({
+                "id": session_id,
+                "title": req.question[:40],
+                "turn_count": 0,
+                "first_asked": now,
+                "last_asked": now,
+                "records": [],
+            })
+
+        session = next((s for s in sessions if s["id"] == session_id), None)
+        if session is None:
+            raise HTTPException(404, "会话不存在")
+
+        turn = session["turn_count"] + 1
+        session["turn_count"] = turn
+        session["last_asked"] = now
+        session["records"].append({
+            "turn_number": turn,
+            "question": req.question,
+            "answer": result["answer"],
+            "sources": [dict(s) for s in result["sources"]],
+            "chunk_size": req.chunk_size,
+            "similarity_threshold": req.similarity_threshold,
+            "created_at": now,
+        })
+
+        # 返回时带上 session_id
+        return {
+            "session_id": session_id,
+            "answer": result["answer"],
+            "sources": [dict(s) for s in result["sources"]],
+        }
 
     except Exception as e:
         raise HTTPException(500, f"查询失败：{str(e)}")
@@ -199,12 +241,70 @@ async def get_config():
     )
 
 
+@app.get("/qa/sessions")
+async def list_sessions():
+    """列出所有问答会话."""
+    return {
+        "sessions": [
+            {
+                "id": s["id"],
+                "title": s["title"],
+                "turn_count": s["turn_count"],
+                "first_asked": s["first_asked"].isoformat(),
+                "last_asked": s["last_asked"].isoformat(),
+            }
+            for s in reversed(sessions)
+        ]
+    }
+
+
+@app.get("/qa/sessions/{session_id}")
+async def get_session(session_id: int):
+    """获取单个会话的完整记录."""
+    session = next((s for s in sessions if s["id"] == session_id), None)
+    if session is None:
+        raise HTTPException(404, "会话不存在")
+    return {
+        "id": session["id"],
+        "title": session["title"],
+        "records": [
+            {
+                "turn_number": r["turn_number"],
+                "question": r["question"],
+                "answer": r["answer"],
+                "sources": r["sources"],
+                "created_at": r["created_at"].isoformat(),
+            }
+            for r in session["records"]
+        ],
+    }
+
+
+@app.delete("/qa/sessions/{session_id}")
+async def delete_session(session_id: int):
+    """删除单个会话."""
+    global sessions
+    session = next((s for s in sessions if s["id"] == session_id), None)
+    if session is None:
+        raise HTTPException(404, "会话不存在")
+    sessions = [s for s in sessions if s["id"] != session_id]
+    return {"message": f"已删除会话 #{session_id}"}
+
+
+@app.delete("/qa/sessions")
+async def delete_all_sessions():
+    """清空所有会话."""
+    global sessions
+    count = len(sessions)
+    sessions = []
+    return {"message": f"已删除 {count} 条会话"}
+
+
 @app.delete("/reports")
 async def delete_report(filename: str = Query(..., description="要删除的研报文件名")):
     """Delete an uploaded report by filename."""
     global documents
 
-    # 1. Find and remove from list
     idx = None
     for i, d in enumerate(documents):
         if d["filename"] == filename:
@@ -216,7 +316,6 @@ async def delete_report(filename: str = Query(..., description="要删除的研�
 
     removed = documents.pop(idx)
 
-    # 2. Remove uploaded file if exists
     file_path = UPLOAD_DIR / filename
     if file_path.exists():
         file_path.unlink()

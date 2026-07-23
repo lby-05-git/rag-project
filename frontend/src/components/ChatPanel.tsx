@@ -43,6 +43,7 @@ export default function ChatPanel({ messages, setMessages }: Props) {
   const [loading, setLoading] = useState(false);
   const [chunkSize, setChunkSize] = useState(400);
   const [threshold, setThreshold] = useState(0.5);
+  const [sessionId, setSessionId] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);
 
@@ -51,9 +52,15 @@ export default function ChatPanel({ messages, setMessages }: Props) {
   }, [messages]);
 
   useEffect(() => {
-    // Auto focus input on mount
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
+
+  // 当 messages 被清空时重置 sessionId
+  useEffect(() => {
+    if (messages.length === 0) {
+      setSessionId(null);
+    }
+  }, [messages.length]);
 
   const handleSend = async () => {
     const q = input.trim();
@@ -68,7 +75,20 @@ export default function ChatPanel({ messages, setMessages }: Props) {
         question: q,
         chunk_size: chunkSize,
         similarity_threshold: threshold,
+        session_id: sessionId,
       });
+      // 保存 session_id 用于后续追问
+      if (res.session_id) {
+        setSessionId(res.session_id);
+      }
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: res.answer,
+          sources: res.sources,
+        },
+      ]);
       setMessages((prev) => [
         ...prev,
         {
