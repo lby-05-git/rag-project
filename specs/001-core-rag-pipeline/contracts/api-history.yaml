@@ -1,0 +1,60 @@
+# API Contracts: 历史记录 (/api/history)
+
+## List History (All Sessions)
+```
+GET /api/history
+Query: ?page=1&page_size=20
+
+Response 200:
+  {
+    "sessions": [
+      {
+        "id": 1,
+        "title": "宁德时代2025年营收预测",
+        "turn_count": 5,
+        "first_asked": "2026-07-23T12:00:00",
+        "last_asked": "2026-07-23T12:30:00"
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "page_size": 20
+  }
+```
+
+## Get Session History
+```
+GET /api/history/{session_id}
+
+Response 200:
+  {
+    "id": 1,
+    "title": "宁德时代2025年营收预测",
+    "records": [
+      {
+        "turn_number": 1,
+        "question": "...",
+        "answer": "...",
+        "sources": [...],
+        "params_used": {...},
+        "created_at": "..."
+      }
+    ]
+  }
+```
+
+## Delete Session
+```
+DELETE /api/history/{session_id}
+
+Response 200:
+  { "message": "删除成功" }
+```
+
+## Delete All History
+```
+DELETE /api/history
+
+Response 200:
+  { "message": "已清除所有历史记录" }
+```

@@ -1,0 +1,77 @@
+# API Contracts: 研报管理 (/api/reports)
+
+## Upload Report
+```
+POST /api/reports/upload
+Content-Type: multipart/form-data
+
+Request:
+  file: PDF file (required, max 50MB)
+
+Response 200:
+  {
+    "id": 1,
+    "filename": "宁德时代-研报.pdf",
+    "file_size": 2450000,
+    "status": "processing",
+    "created_at": "2026-07-23T12:00:00"
+  }
+
+Response 400:
+  {
+    "detail": "仅支持 PDF 格式文件"
+  }
+```
+
+## List Reports
+```
+GET /api/reports
+
+Response 200:
+  {
+    "reports": [
+      {
+        "id": 1,
+        "filename": "宁德时代-研报.pdf",
+        "page_count": 45,
+        "status": "completed",
+        "chunk_count": 120,
+        "created_at": "2026-07-23T12:00:00"
+      }
+    ],
+    "total": 1
+  }
+```
+
+## Get Report Detail
+```
+GET /api/reports/{report_id}
+
+Response 200:
+  {
+    "id": 1,
+    "filename": "宁德时代-研报.pdf",
+    "file_size": 2450000,
+    "page_count": 45,
+    "status": "completed",
+    "chunk_count": 120,
+    "chunk_size_used": 500,
+    "error_message": null,
+    "created_at": "2026-07-23T12:00:00",
+    "updated_at": "2026-07-23T12:02:00"
+  }
+
+Response 404:
+  { "detail": "研报不存在" }
+```
+
+## Delete Report
+```
+DELETE /api/reports/{report_id}
+
+Response 200:
+  { "message": "删除成功" }
+
+Response 404:
+  { "detail": "研报不存在" }
+```

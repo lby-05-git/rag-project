@@ -1,0 +1,37 @@
+# API Contracts: 参数调节 (/api/parameters)
+
+## Get Current Parameters
+```
+GET /api/parameters
+
+Response 200:
+  {
+    "chunk_size": 500,
+    "similarity_threshold": 0.5,
+    "top_k": 5
+  }
+```
+
+## Update Parameters
+```
+PUT /api/parameters
+Content-Type: application/json
+
+Request:
+  {
+    "chunk_size": 300,            // 200-1000, step 50
+    "similarity_threshold": 0.7   // 0.1-1.0, step 0.05
+  }
+
+Response 200:
+  {
+    "chunk_size": 300,
+    "similarity_threshold": 0.7,
+    "top_k": 5,
+    "updated_at": "2026-07-23T12:15:00"
+  }
+
+Response 422:
+  { "detail": "chunk_size 必须在 200-1000 之间" }
+  { "detail": "similarity_threshold 必须在 0.1-1.0 之间" }
+```

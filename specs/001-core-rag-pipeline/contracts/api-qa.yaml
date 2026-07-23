@@ -1,0 +1,95 @@
+# API Contracts: 智能问答 (/api/qa)
+
+## Ask Question
+```
+POST /api/qa/ask
+Content-Type: application/json
+
+Request:
+  {
+    "session_id": null,       // null=新建会话, number=继续已有会话
+    "question": "宁德时代2025年营收预测是多少"
+  }
+
+Response 200:
+  {
+    "session_id": 1,
+    "record_id": 5,
+    "turn_number": 1,
+    "question": "宁德时代2025年营收预测是多少",
+    "answer": "根据东吴证券研报，宁德时代2025年营收预测为...",
+    "sources": [
+      {
+        "report_name": "【东吴证券】宁德时代-技术迭代引领行业-260322.pdf",
+        "page_number": 3,
+        "chunk_content": "...（引用的原文片段）..."
+      }
+    ],
+    "params_used": {
+      "chunk_size": 500,
+      "similarity_threshold": 0.5,
+      "top_k": 5
+    },
+    "created_at": "2026-07-23T12:05:00"
+  }
+
+Response 200 (no answer found):
+  {
+    "session_id": 1,
+    "record_id": 5,
+    "turn_number": 1,
+    "question": "...",
+    "answer": "未找到相关信息。请尝试换个问题或确认研报中是否包含相关内容。",
+    "sources": [],
+    "params_used": { "...": "..." },
+    "created_at": "..."
+  }
+
+Response 400:
+  { "detail": "问题不能为空" }
+
+Response 503:
+  { "detail": "请先上传研报后再提问" }
+  { "detail": "Ollama 服务未连接，请确认 Ollama 已启动" }
+```
+
+## List Sessions
+```
+GET /api/qa/sessions
+
+Response 200:
+  {
+    "sessions": [
+      {
+        "id": 1,
+        "title": "宁德时代2025年营收预测",
+        "turn_count": 3,
+        "created_at": "2026-07-23T12:00:00",
+        "updated_at": "2026-07-23T12:10:00"
+      }
+    ],
+    "total": 1
+  }
+```
+
+## Get Session Detail
+```
+GET /api/qa/sessions/{session_id}
+
+Response 200:
+  {
+    "id": 1,
+    "title": "宁德时代2025年营收预测",
+    "records": [
+      {
+        "id": 5,
+        "turn_number": 1,
+        "question": "...",
+        "answer": "...",
+        "sources": [...],
+        "params_used": {...},
+        "created_at": "..."
+      }
+    ]
+  }
+```
