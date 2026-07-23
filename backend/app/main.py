@@ -199,8 +199,8 @@ async def get_config():
     )
 
 
-@app.delete("/reports/{filename:path}")
-async def delete_report(filename: str):
+@app.delete("/reports")
+async def delete_report(filename: str = Query(..., description="要删除的研报文件名")):
     """Delete an uploaded report by filename."""
     global documents
 
