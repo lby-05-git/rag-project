@@ -7,12 +7,15 @@ import {
   Button,
   Badge,
   Space,
+  theme,
+  Tooltip,
 } from 'antd';
 import {
   HomeOutlined,
   FileTextOutlined,
   HistoryOutlined,
   UploadOutlined,
+  ClearOutlined,
 } from '@ant-design/icons';
 import ChatPanel from './components/ChatPanel';
 import type { Message } from './components/ChatPanel';
@@ -30,12 +33,19 @@ const menuItems = [
   { key: 'history', icon: <HistoryOutlined />, label: '历史记录' },
 ];
 
+const PAGE_TITLES: Record<string, string> = {
+  qa: '智能问答',
+  reports: '研报管理',
+  history: '历史记录',
+};
+
 function App() {
   const [currentPage, setCurrentPage] = useState('qa');
   const [uploadOpen, setUploadOpen] = useState(false);
   const [docCount, setDocCount] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     listDocuments()
@@ -43,55 +53,92 @@ function App() {
       .catch(() => {});
   }, [refreshKey]);
 
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'qa':
+        return <ChatPanel messages={messages} setMessages={setMessages} />;
+      case 'reports':
+        return (
+          <ReportsPage onUploadSuccess={() => setRefreshKey((k) => k + 1)} />
+        );
+      case 'history':
+        return <HistoryPage />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <ConfigProvider
       theme={{
-        token: { colorPrimary: '#1677ff' },
+        algorithm: theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#1677ff',
+          borderRadius: 8,
+        },
       }}
     >
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider width={200} theme="light">
-          <div
-            style={{
-              height: 64,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 'bold',
-              fontSize: 16,
-            }}
-          >
-            研报智能问答
+        {/* 侧边栏 */}
+        <Sider
+          width={220}
+          theme="light"
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+          style={{
+            borderRight: '1px solid #f0f0f0',
+            position: 'relative',
+          }}
+        >
+          <div className="sidebar-logo">
+            <Text strong style={{ fontSize: collapsed ? 14 : 16 }}>
+              {collapsed ? '📊' : '📊 研报智能问答'}
+            </Text>
           </div>
           <Menu
             mode="inline"
             selectedKeys={[currentPage]}
             items={menuItems}
             onClick={({ key }) => setCurrentPage(key)}
+            style={{ borderInlineEnd: 'none' }}
           />
           <div
             style={{
               position: 'absolute',
-              bottom: 16,
+              bottom: 12,
               left: 0,
               right: 0,
-              padding: '0 16px',
+              padding: collapsed ? '0 8px' : '0 16px',
             }}
           >
-            <Button
-              type="dashed"
-              block
-              icon={<UploadOutlined />}
-              onClick={() => setUploadOpen(true)}
-              style={{ marginBottom: 8 }}
-            >
-              上传研报
-            </Button>
-            <Text type="secondary" style={{ fontSize: 12, display: 'block', textAlign: 'center' }}>
-              已上传 {docCount} 份研报
-            </Text>
+            {!collapsed && (
+              <>
+                <Button
+                  type="dashed"
+                  block
+                  icon={<UploadOutlined />}
+                  onClick={() => setUploadOpen(true)}
+                  style={{ marginBottom: 6, borderRadius: 6 }}
+                >
+                  上传研报
+                </Button>
+                <Text
+                  type="secondary"
+                  style={{
+                    fontSize: 12,
+                    display: 'block',
+                    textAlign: 'center',
+                  }}
+                >
+                  已上传 {docCount} 份研报
+                </Text>
+              </>
+            )}
           </div>
         </Sider>
+
+        {/* 主区域 */}
         <Layout>
           <Header
             style={{
@@ -101,31 +148,61 @@ function App() {
               alignItems: 'center',
               justifyContent: 'space-between',
               borderBottom: '1px solid #f0f0f0',
+              height: 56,
+              lineHeight: '56px',
             }}
           >
-            <Text strong style={{ fontSize: 18 }}>
-              企业研报智能问答系统
-            </Text>
             <Space>
+              <Text strong style={{ fontSize: 17 }}>
+                {PAGE_TITLES[currentPage]}
+              </Text>
+              {currentPage === 'qa' && messages.length > 0 && (
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  {messages.filter((m) => m.role === 'assistant').length} 次回答
+                </Text>
+              )}
+            </Space>
+            <Space size={12}>
+              {currentPage === 'qa' && messages.length > 0 && (
+                <Tooltip title="清空对话">
+                  <Button
+                    type="text"
+                    icon={<ClearOutlined />}
+                    onClick={() => setMessages([])}
+                    size="small"
+                  />
+                </Tooltip>
+              )}
               <Badge count={docCount} size="small" offset={[-5, 0]}>
                 <Button
                   type="primary"
                   icon={<UploadOutlined />}
                   onClick={() => setUploadOpen(true)}
+                  size="middle"
+                  style={{ borderRadius: 6 }}
                 >
                   上传研报
                 </Button>
               </Badge>
             </Space>
           </Header>
-          <Content style={{ margin: 24 }}>
-            {currentPage === 'qa' && (
-              <ChatPanel messages={messages} setMessages={setMessages} />
-            )}
-            {currentPage === 'reports' && (
-              <ReportsPage onUploadSuccess={() => setRefreshKey((k) => k + 1)} />
-            )}
-            {currentPage === 'history' && <HistoryPage />}
+
+          <Content
+            style={{
+              margin: 0,
+              padding: 20,
+              background: '#f5f5f5',
+              minHeight: 280,
+              overflow: 'auto',
+            }}
+          >
+            <div
+              key={currentPage}
+              className="page-enter-active"
+              style={{ height: '100%' }}
+            >
+              {renderPage()}
+            </div>
           </Content>
         </Layout>
       </Layout>
