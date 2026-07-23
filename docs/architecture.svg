@@ -43,42 +43,42 @@
 
   <rect width="1200" height="900" fill="url(#bg)" rx="12"/>
   <text x="600" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1a1a1a">
-    RAG 架构图
+    企业研报智能问答系统 — RAG 架构图
   </text>
   <text x="600" y="58" text-anchor="middle" font-size="12" fill="#8c8c8c">
-    FastAPI + LangChain + FAISS + Ollama | React 19 + Ant Design 5
+    FastAPI + LangChain + FAISS + Ollama  |  React 19 + Ant Design 5
   </text>
 
   <!-- 用户层 -->
   <rect x="30" y="75" width="1140" height="120" rx="8" fill="#e6f4ff" stroke="#91caff" stroke-width="1" stroke-dasharray="6,3"/>
-  <text x="45" y="95" font-size="11" fill="#1677ff" font-weight="bold">Frontend</text>
+  <text x="45" y="95" font-size="11" fill="#1677ff" font-weight="bold">用户层（前端界面）</text>
 
   <ellipse cx="100" cy="145" rx="30" ry="30" fill="#1677ff" opacity="0.1"/>
-  <text x="100" y="142" text-anchor="middle" font-size="22">User</text>
-  <text x="100" y="175" text-anchor="middle" font-size="11" fill="#333" font-weight="bold">User</text>
+  <text x="100" y="142" text-anchor="middle" font-size="22">👤</text>
+  <text x="100" y="175" text-anchor="middle" font-size="11" fill="#333" font-weight="bold">用户</text>
 
   <rect x="220" y="105" width="160" height="70" rx="10" fill="url(#boxBlue)" filter="url(#shadow)"/>
-  <text x="300" y="132" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">React 19 SPA</text>
+  <text x="300" y="132" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">React 19 前端</text>
   <text x="300" y="150" text-anchor="middle" font-size="10" fill="#d9e6ff">Ant Design 5 + Vite</text>
 
   <rect x="440" y="105" width="130" height="30" rx="15" fill="#f5222d" filter="url(#shadow)"/>
-  <text x="505" y="124" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Offline Mode</text>
+  <text x="505" y="124" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">离线模式</text>
   <rect x="440" y="145" width="130" height="30" rx="15" fill="#52c41a" filter="url(#shadow)"/>
-  <text x="505" y="164" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Online Mode</text>
+  <text x="505" y="164" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">在线模式</text>
 
   <line x1="130" y1="145" x2="215" y2="145" stroke="#1677ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
 
   <!-- 应用层 -->
   <rect x="30" y="205" width="550" height="260" rx="8" fill="#f6ffed" stroke="#b7eb8f" stroke-width="1" stroke-dasharray="6,3"/>
-  <text x="45" y="225" font-size="11" fill="#52c41a" font-weight="bold">Backend API</text>
+  <text x="45" y="225" font-size="11" fill="#52c41a" font-weight="bold">应用层（后端 API）</text>
 
   <rect x="60" y="245" width="150" height="80" rx="10" fill="url(#boxGreen)" filter="url(#shadow)"/>
-  <text x="135" y="274" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">FastAPI</text>
-  <text x="135" y="292" text-anchor="middle" font-size="10" fill="#d9ffcc">CORS / Middleware</text>
-  <text x="135" y="308" text-anchor="middle" font-size="10" fill="#d9ffcc">Uvicorn Async</text>
+  <text x="135" y="274" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">FastAPI 后端</text>
+  <text x="135" y="292" text-anchor="middle" font-size="10" fill="#d9ffcc">CORS / 中间件</text>
+  <text x="135" y="308" text-anchor="middle" font-size="10" fill="#d9ffcc">Uvicorn 异步服务</text>
 
   <rect x="260" y="240" width="140" height="95" rx="8" fill="#fff" stroke="#52c41a" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="330" y="260" text-anchor="middle" font-size="11" fill="#333" font-weight="bold">Endpoints</text>
+  <text x="330" y="260" text-anchor="middle" font-size="11" fill="#333" font-weight="bold">API 接口</text>
   <text x="330" y="278" text-anchor="middle" font-size="10" fill="#666">POST /upload</text>
   <text x="330" y="294" text-anchor="middle" font-size="10" fill="#666">POST /query</text>
   <text x="330" y="310" text-anchor="middle" font-size="10" fill="#666">GET /documents</text>
@@ -86,131 +86,130 @@
 
   <rect x="450" y="245" width="110" height="80" rx="10" fill="url(#boxTeal)" filter="url(#shadow)"/>
   <text x="505" y="276" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">SQLite</text>
-  <text x="505" y="296" text-anchor="middle" font-size="10" fill="#ccffff">History + Meta</text>
+  <text x="505" y="296" text-anchor="middle" font-size="10" fill="#ccffff">会话 + 历史记录</text>
 
   <path d="M300,175 L300,215 Q300,230 135,230 L135,240" stroke="#1677ff" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
-  <text x="220" y="205" text-anchor="middle" font-size="10" fill="#1677ff">HTTP /api (Vite Proxy)</text>
+  <text x="220" y="205" text-anchor="middle" font-size="10" fill="#1677ff">HTTP /api（Vite 代理）</text>
   <line x1="210" y1="285" x2="255" y2="285" stroke="#52c41a" stroke-width="2" marker-end="url(#arrowGreen)"/>
 
-  <!-- RAG 引擎 -->
+  <!-- RAG 引擎层 -->
   <rect x="30" y="475" width="1140" height="190" rx="8" fill="#fff7e6" stroke="#ffd591" stroke-width="1" stroke-dasharray="6,3"/>
-  <text x="45" y="495" font-size="11" fill="#fa8c16" font-weight="bold">RAG Engine (LangChain)</text>
+  <text x="45" y="495" font-size="11" fill="#fa8c16" font-weight="bold">RAG 引擎层（LangChain）</text>
 
-  <!-- Offline RAG Pipeline -->
   <rect x="60" y="505" width="1080" height="140" rx="10" fill="#fff" stroke="#ffd591" stroke-width="1" filter="url(#shadow)"/>
 
-  <!-- Step boxes -->
+  <!-- 步骤 1-6 -->
   <g transform="translate(85, 525)">
     <rect width="130" height="55" rx="8" fill="#fff7e6" stroke="#fa8c16" stroke-width="1.5"/>
-    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">PDF Parse</text>
-    <text x="65" y="41" text-anchor="middle" font-size="9" fill="#8c8c8c">PyMuPDF Extract</text>
+    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">PDF 解析</text>
+    <text x="65" y="41" text-anchor="middle" font-size="9" fill="#8c8c8c">PyMuPDF 提取</text>
     <line x1="130" y1="27" x2="155" y2="27" stroke="#fa8c16" stroke-width="2" marker-end="url(#arrowGray)"/>
   </g>
 
   <g transform="translate(245, 525)">
     <rect width="130" height="55" rx="8" fill="#fff7e6" stroke="#fa8c16" stroke-width="1.5"/>
-    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">Split</text>
+    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">文本分块</text>
     <text x="65" y="41" text-anchor="middle" font-size="9" fill="#8c8c8c">chunk_size 200-1000</text>
     <line x1="130" y1="27" x2="155" y2="27" stroke="#fa8c16" stroke-width="2" marker-end="url(#arrowGray)"/>
   </g>
 
   <g transform="translate(405, 525)">
     <rect width="145" height="55" rx="8" fill="#fff7e6" stroke="#fa8c16" stroke-width="1.5"/>
-    <text x="72" y="20" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">Embed</text>
+    <text x="72" y="20" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">向量嵌入</text>
     <text x="72" y="36" text-anchor="middle" font-size="9" fill="#8c8c8c">bge-large-zh-v1.5</text>
-    <text x="72" y="50" text-anchor="middle" font-size="9" fill="#8c8c8c">1024d (Ollama)</text>
+    <text x="72" y="50" text-anchor="middle" font-size="9" fill="#8c8c8c">1024 维（Ollama）</text>
     <line x1="145" y1="27" x2="170" y2="27" stroke="#fa8c16" stroke-width="2" marker-end="url(#arrowGray)"/>
   </g>
 
   <g transform="translate(580, 525)">
     <rect width="130" height="55" rx="8" fill="#fff7e6" stroke="#fa8c16" stroke-width="1.5"/>
-    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">FAISS Index</text>
+    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">FAISS 存储</text>
     <text x="65" y="41" text-anchor="middle" font-size="9" fill="#8c8c8c">IndexFlatL2</text>
     <line x1="130" y1="27" x2="155" y2="27" stroke="#fa8c16" stroke-width="2" marker-end="url(#arrowGray)"/>
   </g>
 
   <g transform="translate(740, 525)">
     <rect width="130" height="55" rx="8" fill="#fff7e6" stroke="#fa8c16" stroke-width="1.5"/>
-    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">Retrieve</text>
-    <text x="65" y="41" text-anchor="middle" font-size="9" fill="#8c8c8c">Top-5 + Threshold</text>
+    <text x="65" y="23" text-anchor="middle" font-size="12" fill="#d46b08" font-weight="bold">语义检索</text>
+    <text x="65" y="41" text-anchor="middle" font-size="9" fill="#8c8c8c">Top-5 + 阈值过滤</text>
     <line x1="130" y1="27" x2="155" y2="27" stroke="#fa8c16" stroke-width="2" marker-end="url(#arrowGray)"/>
   </g>
 
   <g transform="translate(900, 525)">
     <rect width="145" height="55" rx="8" fill="#fff2f0" stroke="#f5222d" stroke-width="1.5"/>
-    <text x="72" y="20" text-anchor="middle" font-size="12" fill="#cf1322" font-weight="bold">Generate</text>
+    <text x="72" y="20" text-anchor="middle" font-size="12" fill="#cf1322" font-weight="bold">LLM 生成</text>
     <text x="72" y="36" text-anchor="middle" font-size="9" fill="#8c8c8c">Qwen2.5:0.5b</text>
-    <text x="72" y="50" text-anchor="middle" font-size="9" fill="#8c8c8c">32K ctx (Ollama)</text>
+    <text x="72" y="50" text-anchor="middle" font-size="9" fill="#8c8c8c">32K 上下文（Ollama）</text>
   </g>
 
-  <!-- Online mode extension -->
+  <!-- 在线模式扩展 -->
   <rect x="85" y="602" width="1080" height="40" rx="6" fill="#f6ffed" stroke="#b7eb8f" stroke-width="1" stroke-dasharray="4,2"/>
   <text x="620" y="627" text-anchor="middle" font-size="11" fill="#52c41a">
-    Online Extension: Cloud Vector DB -> Cloud LLM API (Claude/GPT) -> Stronger Generation
+    在线模式扩展：云端向量数据库 → 云端 LLM API（Claude/GPT）→ 更强生成能力
   </text>
 
   <!-- 数据层 -->
   <rect x="30" y="675" width="1140" height="210" rx="8" fill="#f9f0ff" stroke="#d3adf7" stroke-width="1" stroke-dasharray="6,3"/>
-  <text x="45" y="695" font-size="11" fill="#722ed1" font-weight="bold">Data Layer (Local)</text>
+  <text x="45" y="695" font-size="11" fill="#722ed1" font-weight="bold">数据层（本地存储）</text>
 
   <g transform="translate(85, 710)">
     <rect width="200" height="80" rx="10" fill="url(#boxPurple)" filter="url(#shadowDeep)"/>
-    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">PDF Files</text>
-    <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">data/ directory</text>
-    <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">Git-ignored</text>
+    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">PDF 研报</text>
+    <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">data/ 目录</text>
+    <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">Git 忽略</text>
   </g>
 
   <g transform="translate(350, 710)">
     <rect width="200" height="80" rx="10" fill="url(#boxPurple)" filter="url(#shadowDeep)"/>
-    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">SQLite DB</text>
-    <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">Report Meta</text>
-    <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">QA History</text>
+    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">SQLite 数据库</text>
+    <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">研报元数据</text>
+    <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">问答历史记录</text>
   </g>
 
   <g transform="translate(615, 710)">
     <rect width="200" height="80" rx="10" fill="url(#boxPurple)" filter="url(#shadowDeep)"/>
-    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">FAISS Vectors</text>
-    <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">1024d IndexFlatL2</text>
-    <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">Chunk Metadata</text>
+    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">FAISS 向量库</text>
+    <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">1024 维 IndexFlatL2</text>
+    <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">文本块元数据</text>
   </g>
 
   <g transform="translate(880, 710)">
     <rect width="200" height="80" rx="10" fill="url(#boxPurple)" filter="url(#shadowDeep)"/>
-    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">Ollama</text>
+    <text x="100" y="30" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">Ollama 本地</text>
     <text x="100" y="50" text-anchor="middle" font-size="10" fill="#e8d9ff">Qwen2.5:0.5b</text>
     <text x="100" y="66" text-anchor="middle" font-size="10" fill="#e8d9ff">bge-large-zh-v1.5</text>
   </g>
 
-  <!-- Arrows from data to RAG -->
+  <!-- 数据层 → RAG 箭头 -->
   <line x1="185" y1="710" x2="185" y2="650" stroke="#722ed1" stroke-width="1.5" stroke-dasharray="4,3"/>
   <line x1="450" y1="710" x2="450" y2="650" stroke="#722ed1" stroke-width="1.5" stroke-dasharray="4,3"/>
   <line x1="715" y1="710" x2="715" y2="650" stroke="#722ed1" stroke-width="1.5" stroke-dasharray="4,3"/>
   <line x1="980" y1="710" x2="980" y2="650" stroke="#722ed1" stroke-width="1.5" stroke-dasharray="4,3"/>
 
-  <!-- Upload flow arrow -->
+  <!-- 上传流程 -->
   <path d="M135,325 L135,360 Q135,380 310,380 L310,500" stroke="#52c41a" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrowGreen)"/>
-  <text x="200" y="375" text-anchor="middle" font-size="10" fill="#52c41a" font-weight="bold">Upload Flow</text>
+  <text x="200" y="375" text-anchor="middle" font-size="10" fill="#52c41a" font-weight="bold">上传流程</text>
 
-  <!-- Query flow arrow -->
+  <!-- 查询流程 -->
   <path d="M505,325 L505,360 Q505,420 805,420 L805,520" stroke="#1677ff" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#arrowBlue)"/>
-  <text x="680" y="415" text-anchor="middle" font-size="10" fill="#1677ff" font-weight="bold">Query Flow</text>
+  <text x="680" y="415" text-anchor="middle" font-size="10" fill="#1677ff" font-weight="bold">查询流程</text>
 
-  <!-- Response arrow -->
+  <!-- 响应返回 -->
   <path d="M972,580 L972,430 Q972,400 330,400 L330,340" stroke="#fa8c16" stroke-width="2" fill="none" stroke-dasharray="4,2" marker-end="url(#arrowGray)"/>
-  <text x="690" y="440" text-anchor="middle" font-size="10" fill="#fa8c16" font-weight="bold">Response</text>
+  <text x="690" y="440" text-anchor="middle" font-size="10" fill="#fa8c16" font-weight="bold">返回回答 + 来源引用</text>
 
-  <!-- Legend -->
+  <!-- 图例 -->
   <rect x="30" y="860" width="1140" height="30" rx="6" fill="#fff" stroke="#e8e8e8" stroke-width="1"/>
   <rect x="50" y="868" width="14" height="14" rx="3" fill="#1677ff"/>
-  <text x="70" y="879" font-size="10" fill="#666">Frontend</text>
+  <text x="70" y="879" font-size="10" fill="#666">前端界面</text>
   <rect x="160" y="868" width="14" height="14" rx="3" fill="#52c41a"/>
-  <text x="180" y="879" font-size="10" fill="#666">Backend</text>
+  <text x="180" y="879" font-size="10" fill="#666">后端 API</text>
   <rect x="270" y="868" width="14" height="14" rx="3" fill="#fa8c16"/>
-  <text x="290" y="879" font-size="10" fill="#666">RAG Pipeline</text>
+  <text x="290" y="879" font-size="10" fill="#666">RAG 流水线</text>
   <rect x="390" y="868" width="14" height="14" rx="3" fill="#722ed1"/>
-  <text x="410" y="879" font-size="10" fill="#666">Data</text>
+  <text x="410" y="879" font-size="10" fill="#666">数据存储</text>
   <line x1="520" y1="875" x2="560" y2="875" stroke="#8c8c8c" stroke-width="2" stroke-dasharray="6,3"/>
-  <text x="570" y="879" font-size="10" fill="#666">Async Flow</text>
+  <text x="570" y="879" font-size="10" fill="#666">异步数据流</text>
   <rect x="690" y="868" width="14" height="14" rx="3" fill="none" stroke="#52c41a" stroke-width="1" stroke-dasharray="4,2"/>
-  <text x="710" y="879" font-size="10" fill="#666">Online Extension</text>
+  <text x="710" y="879" font-size="10" fill="#666">在线模式扩展</text>
 </svg>
