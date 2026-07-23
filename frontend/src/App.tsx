@@ -6,6 +6,8 @@ import {
   HistoryOutlined,
 } from '@ant-design/icons';
 import ChatPanel from './components/ChatPanel';
+import ReportsPage from './pages/ReportsPage';
+import HistoryPage from './pages/HistoryPage';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -62,8 +64,8 @@ function App() {
           </Header>
           <Content style={{ margin: 24 }}>
             {currentPage === 'qa' && <ChatPanel />}
-            {currentPage === 'reports' && <div>研报管理（待实现）</div>}
-            {currentPage === 'history' && <div>历史记录（待实现）</div>}
+            {currentPage === 'reports' && <ReportsPage />}
+            {currentPage === 'history' && <HistoryPage />}
           </Content>
         </Layout>
       </Layout>
