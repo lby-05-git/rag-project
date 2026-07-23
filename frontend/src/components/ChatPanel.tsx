@@ -18,14 +18,18 @@ import SourceCitation from './SourceCitation';
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
-interface Message {
+export interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: SourceItem[];
 }
 
-export default function ChatPanel() {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface Props {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+export default function ChatPanel({ messages, setMessages }: Props) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [chunkSize, setChunkSize] = useState(400);

@@ -15,6 +15,7 @@ import {
   UploadOutlined,
 } from '@ant-design/icons';
 import ChatPanel from './components/ChatPanel';
+import type { Message } from './components/ChatPanel';
 import ReportsPage from './pages/ReportsPage';
 import HistoryPage from './pages/HistoryPage';
 import UploadModal from './components/UploadModal';
@@ -34,6 +35,7 @@ function App() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [docCount, setDocCount] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     listDocuments()
@@ -67,7 +69,6 @@ function App() {
             items={menuItems}
             onClick={({ key }) => setCurrentPage(key)}
           />
-          {/* 侧边栏底部：已上传文档信息 */}
           <div
             style={{
               position: 'absolute',
@@ -118,7 +119,9 @@ function App() {
             </Space>
           </Header>
           <Content style={{ margin: 24 }}>
-            {currentPage === 'qa' && <ChatPanel />}
+            {currentPage === 'qa' && (
+              <ChatPanel messages={messages} setMessages={setMessages} />
+            )}
             {currentPage === 'reports' && (
               <ReportsPage onUploadSuccess={() => setRefreshKey((k) => k + 1)} />
             )}
