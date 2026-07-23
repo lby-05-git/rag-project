@@ -197,3 +197,30 @@ async def get_config():
         ollama_status="connected" if ollama_ok else "disconnected",
         document_count=len(documents),
     )
+
+
+@app.delete("/reports/{filename:path}")
+async def delete_report(filename: str):
+    """Delete an uploaded report by filename."""
+    global documents
+
+    # 1. Find and remove from list
+    idx = None
+    for i, d in enumerate(documents):
+        if d["filename"] == filename:
+            idx = i
+            break
+
+    if idx is None:
+        raise HTTPException(404, f"研报不存在：{filename}")
+
+    removed = documents.pop(idx)
+
+    # 2. Remove uploaded file if exists
+    file_path = UPLOAD_DIR / filename
+    if file_path.exists():
+        file_path.unlink()
+
+    return {
+        "message": f"已删除 {removed['filename']}（{removed['chunks']} 个文本块）"
+    }

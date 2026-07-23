@@ -72,4 +72,8 @@ export async function getConfig(): Promise<ConfigResponse> {
   return res.data;
 }
 
+export async function deleteDocument(filename: string): Promise<void> {
+  await api.delete(`/reports/${encodeURIComponent(filename)}`);
+}
+
 export default api;

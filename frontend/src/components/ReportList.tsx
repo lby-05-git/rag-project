@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Table, Tag, Typography, Card } from 'antd';
-import { FileTextOutlined } from '@ant-design/icons';
-import { listDocuments } from '../api/client';
+import { Table, Tag, Typography, Card, Button, Popconfirm, message } from 'antd';
+import { FileTextOutlined, DeleteOutlined } from '@ant-design/icons';
+import { listDocuments, deleteDocument } from '../api/client';
 import type { DocumentItem } from '../api/client';
 
 const { Text } = Typography;
 
 interface Props {
   refreshKey: number;
+  onRefresh: () => void;
 }
 
-export default function ReportList({ refreshKey }: Props) {
+export default function ReportList({ refreshKey, onRefresh }: Props) {
   const [data, setData] = useState<DocumentItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +22,17 @@ export default function ReportList({ refreshKey }: Props) {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [refreshKey]);
+
+  const handleDelete = async (filename: string) => {
+    try {
+      await deleteDocument(filename);
+      message.success(`已删除 ${filename}`);
+      onRefresh();
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail || err?.message || '删除失败';
+      message.error(detail);
+    }
+  };
 
   const columns = [
     {
@@ -47,6 +59,24 @@ export default function ReportList({ refreshKey }: Props) {
       key: 'uploaded_at',
       width: 200,
       render: (t: string) => new Date(t).toLocaleString('zh-CN'),
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 100,
+      render: (_: any, record: DocumentItem) => (
+        <Popconfirm
+          title="确定删除这份研报？"
+          description="删除后该研报的向量数据将不再可用"
+          onConfirm={() => handleDelete(record.filename)}
+          okText="删除"
+          cancelText="取消"
+        >
+          <Button type="text" danger icon={<DeleteOutlined />}>
+            删除
+          </Button>
+        </Popconfirm>
+      ),
     },
   ];
 

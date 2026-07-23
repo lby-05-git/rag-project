@@ -8,7 +8,7 @@ export default function ReportsPage() {
   return (
     <div>
       <ReportUploader onUploadSuccess={() => setRefreshKey((k) => k + 1)} />
-      <ReportList refreshKey={refreshKey} />
+      <ReportList refreshKey={refreshKey} onRefresh={() => setRefreshKey((k) => k + 1)} />
     </div>
   );
 }
