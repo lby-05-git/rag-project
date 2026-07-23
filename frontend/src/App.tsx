@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { ConfigProvider, Layout, Menu, theme } from 'antd';
+import { ConfigProvider, Layout, Menu, Typography } from 'antd';
 import {
   HomeOutlined,
   FileTextOutlined,
   HistoryOutlined,
 } from '@ant-design/icons';
+import ChatPanel from './components/ChatPanel';
 
 const { Header, Content, Sider } = Layout;
+const { Title } = Typography;
 
 const menuItems = [
   { key: 'qa', icon: <HomeOutlined />, label: '智能问答' },
@@ -20,7 +22,6 @@ function App() {
   return (
     <ConfigProvider
       theme={{
-        algorithm: theme.defaultAlgorithm,
         token: { colorPrimary: '#1677ff' },
       }}
     >
@@ -50,17 +51,17 @@ function App() {
             style={{
               background: '#fff',
               padding: '0 24px',
-              fontSize: 18,
-              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
               borderBottom: '1px solid #f0f0f0',
             }}
           >
-            {currentPage === 'qa' && '智能问答'}
-            {currentPage === 'reports' && '研报管理'}
-            {currentPage === 'history' && '历史记录'}
+            <Title level={4} style={{ margin: 0 }}>
+              企业研报智能问答系统
+            </Title>
           </Header>
           <Content style={{ margin: 24 }}>
-            {currentPage === 'qa' && <div>问答页面（待实现）</div>}
+            {currentPage === 'qa' && <ChatPanel />}
             {currentPage === 'reports' && <div>研报管理（待实现）</div>}
             {currentPage === 'history' && <div>历史记录（待实现）</div>}
           </Content>
