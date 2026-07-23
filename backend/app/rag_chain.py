@@ -171,3 +171,53 @@ def rag_query(
             for h in hits
         ],
     }
+
+
+# ---------------------------------------------------------------------------
+# 便捷类封装
+# ---------------------------------------------------------------------------
+
+class RAGChain:
+    """RAG 链的便捷类接口。
+
+    用法::
+
+        chain = RAGChain("data/faiss_index")
+        result = chain.query("宁德时代营收预测")
+    """
+
+    def __init__(
+        self,
+        faiss_path: str,
+        *,
+        k: int = 5,
+        similarity_threshold: float = DEFAULT_THRESHOLD,
+    ):
+        from app.vector_store import load_vector_store
+
+        self.store = load_vector_store(faiss_path)
+        if self.store is None:
+            raise FileNotFoundError(f"无法加载 FAISS 索引：{faiss_path}")
+        self.k = k
+        self.similarity_threshold = similarity_threshold
+
+    def query(self, question: str, **kwargs) -> dict:
+        """执行一次 RAG 查询。
+
+        Args:
+            question: 用户问题。
+            **kwargs: 覆盖默认的 k / similarity_threshold / llm_host / llm_model。
+
+        Returns:
+            {"answer": str, "sources": [...]}
+        """
+        return rag_query(
+            self.store,
+            question,
+            k=kwargs.get("k", self.k),
+            similarity_threshold=kwargs.get(
+                "similarity_threshold", self.similarity_threshold
+            ),
+            llm_host=kwargs.get("llm_host"),
+            llm_model=kwargs.get("llm_model"),
+        )
