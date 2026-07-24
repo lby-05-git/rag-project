@@ -1,0 +1,105 @@
+企业研报智能问答系统 — 技术讲解提纲
+========================================
+
+一、项目概况
+------------
+基于 RAG（检索增强生成）的本地智能问答系统，
+上传 PDF 研报 → 自动解析分块 → 向量化存储 →
+自然语言提问 → 检索相关段落 → LLM 生成带来源引用的回答。
+
+
+二、技术栈（按层）
+------------------
+
+后端层:
+  Python 3.12+ / FastAPI / Uvicorn / pydantic
+  LangChain (RAG编排) + FAISS (向量索引, IndexFlatL2)
+  SQLAlchemy + SQLite (元数据 + 历史记录)
+  PyMuPDF (PDF解析, CJK友好) + RecursiveCharacterTextSplitter (分块)
+  httpx (调用 Ollama)
+
+AI 层 (Ollama 本地运行):
+  嵌入模型: bge-large-zh-v1.5 (1024维, 中文优化)
+  LLM: Qwen2.5:0.5b (0.5B参数, 32K上下文, CPU可跑)
+
+前端层:
+  React 19 + TypeScript + Vite
+  Ant Design 5 (UI组件) + axios (HTTP)
+
+
+三、RAG 流水线 (5阶段)
+-----------------------
+
+1. PDF解析 — PyMuPDF 提取全文(逐页保留元数据)
+2. 文本分块 — RecursiveCharacterTextSplitter
+   分隔符: ["\n\n","\n","。","！","？","；","，"," ",""]
+   chunk_size = 200~1000 (默认400), overlap = 10%
+3. 向量嵌入 — bge-large-zh-v1.5 → 1024维向量
+4. 向量检索 — FAISS similarity_search, Top-K=5, 阈值过滤(默认0.3)
+5. 生成回答 — Qwen2.5:0.5b 温度0.3, 最多512 tokens
+
+
+四、设计文档体系 (Spec-Driven Development)
+-----------------------------------------
+
+每个功能先写文档再写代码, 流程:
+
+  规范(spec.md) → 方案(plan.md) → 任务(tasks.md) → 实现 → 评审
+
+
+五、spec.md 记录了哪些内容
+--------------------------
+
+功能规格说明书, 定义"做什么":
+
+  • 4个用户故事(US):
+    US1-P1: 上传PDF→自动解析分块→存入FAISS
+    US2-P1: 自然语言问答 + 来源追溯(研报名+页码)
+    US3-P2: 实时调节chunk_size(200-1000)和相似度阈值(0-1.0)
+    US4-P3: 问答历史自动保存 + 回顾 + 恢复
+
+  • 20条功能需求 (FR-001 ~ FR-020)
+  • Given-When-Then 验收场景 (每个故事3个)
+  • 边界情况: 空结果/超长查询/参数极限/重复上传/无研报提问
+  • 8条成功标准: 响应≤10秒, 准确率≥90%, 零幻觉率等
+  • 关键实体定义: Report/Chunk/Embedding/QA Record/Param Setting
+
+
+六、plan.md 记录了哪些内容
+--------------------------
+
+实现方案设计, 定义"怎么做":
+
+  • 技术上下文: Python 3.12+, React 19, SQLite+FAISS, Ollama
+  • 宪法合规检查: 5项原则逐条评估, 全部通过
+  • 完整项目目录树 (backend/app + frontend/src)
+  • 架构分层: routers / services / models / schemas
+  • 性能目标: 问答≤10秒, 30页PDF索引≤3分钟
+  • 约束: 全本地运行, 32K上下文, MVP≤10万文本块
+
+
+七、tasks.md 记录了哪些内容
+---------------------------
+
+任务分解, 定义"谁先做":
+
+  • 7个阶段, 62个任务:
+
+    Phase 1 Setup (6任务)        初始化项目结构
+    Phase 2 Foundational (5任务) 核心基础设施     ← 阻塞所有后续
+    Phase 3 US1 (14任务)         研报上传与索引
+    Phase 4 US2 (13任务)         智能问答         ← MVP完成!
+    Phase 5 US3 (9任务)          参数实时调节
+    Phase 6 US4 (7任务)          历史记录
+    Phase 7 Polish (8任务)       错误处理+文档
+
+  • MVP = Phase 1~4 (38任务): 上传→提问→拿带来源的回答
+  • 标有[P]的任务可并行开发
+  • 每个阶段结束有关键检查点
+
+
+八、一句话总结
+--------------
+
+"上传PDF → 自动索引 → 自然语言提问 → LLM生成带来源的回答,
+全部本地运行, 数据不出本机。"
