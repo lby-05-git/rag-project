@@ -1,15 +1,41 @@
 企业研报智能问答系统 — 技术讲解提纲
 ========================================
 
-一、项目概况
-------------
-基于 RAG（检索增强生成）的本地智能问答系统，
-上传 PDF 研报 → 自动解析分块 → 向量化存储 →
-自然语言提问 → 检索相关段落 → LLM 生成带来源引用的回答。
+
+一、前端与后端文件构成
+----------------------
+
+【后端文件】backend/app/
+  ├── main.py              FastAPI 入口, 路由定义, CORS, 生命周期
+  ├── config.py            配置管理 (pydantic-settings, 从 .env 加载)
+  ├── document_loader.py   PDF解析 (PyMuPDF) + 文本分块 (RecursiveSplitter)
+  ├── rag_chain.py         RAG核心链: retrieve() → build_prompt() → generate()
+  ├── vector_store.py      FAISS向量库: create/save/load + Ollama嵌入
+  ├── schemas/api.py       Pydantic请求/响应模型 (QueryRequest, UploadResponse等)
+  ├── models/__init__.py   数据模型包
+  ├── routers/__init__.py  路由包
+  └── services/__init__.py 服务层包
+
+【前端文件】frontend/src/
+  ├── App.tsx              主应用布局 (侧边栏导航 + 页面路由)
+  ├── main.tsx             入口文件
+  ├── api/client.ts        axios API 客户端
+  ├── pages/
+  │   ├── ReportsPage.tsx  研报管理页面
+  │   └── HistoryPage.tsx  历史记录页面
+  ├── components/
+  │   ├── ChatPanel.tsx    问答对话面板 (消息列表 + 输入框)
+  │   ├── ParameterPanel.tsx 参数调节面板 (chunk_size + threshold滑块)
+  │   ├── ReportUploader.tsx 研报上传组件
+  │   ├── ReportList.tsx   研报列表组件
+  │   ├── UploadModal.tsx  上传弹窗
+  │   ├── SourceCitation.tsx 来源引用展示
+  │   └── HistoryList.tsx  历史记录列表
+  └── styles/global.css    全局样式
 
 
-二、技术栈（按层）
-------------------
+二、RAG 项目用到的技术栈
+------------------------
 
 后端层:
   Python 3.12+ / FastAPI / Uvicorn / pydantic
@@ -26,28 +52,17 @@ AI 层 (Ollama 本地运行):
   React 19 + TypeScript + Vite
   Ant Design 5 (UI组件) + axios (HTTP)
 
-
-三、RAG 流水线 (5阶段)
------------------------
-
-1. PDF解析 — PyMuPDF 提取全文(逐页保留元数据)
-2. 文本分块 — RecursiveCharacterTextSplitter
-   分隔符: ["\n\n","\n","。","！","？","；","，"," ",""]
-   chunk_size = 200~1000 (默认400), overlap = 10%
-3. 向量嵌入 — bge-large-zh-v1.5 → 1024维向量
-4. 向量检索 — FAISS similarity_search, Top-K=5, 阈值过滤(默认0.3)
-5. 生成回答 — Qwen2.5:0.5b 温度0.3, 最多512 tokens
+RAG 流水线 5 阶段:
+  1. PDF解析 — PyMuPDF 提取全文(逐页保留元数据)
+  2. 文本分块 — RecursiveCharacterTextSplitter
+     分隔符: ["\n\n","\n","。","！","？","；","，"," ",""]
+     chunk_size = 200~1000 (默认400), overlap = 10%
+  3. 向量嵌入 — bge-large-zh-v1.5 → 1024维向量
+  4. 向量检索 — FAISS similarity_search, Top-K=5, 阈值过滤(默认0.3)
+  5. 生成回答 — Qwen2.5:0.5b 温度0.3, 最多512 tokens
 
 
-四、设计文档体系 (Spec-Driven Development)
------------------------------------------
-
-每个功能先写文档再写代码, 流程:
-
-  规范(spec.md) → 方案(plan.md) → 任务(tasks.md) → 实现 → 评审
-
-
-五、spec.md 记录了哪些内容
+三、spec.md 记录了哪些内容
 --------------------------
 
 功能规格说明书, 定义"做什么":
@@ -65,7 +80,7 @@ AI 层 (Ollama 本地运行):
   • 关键实体定义: Report/Chunk/Embedding/QA Record/Param Setting
 
 
-六、plan.md 记录了哪些内容
+四、plan.md 记录了哪些内容
 --------------------------
 
 实现方案设计, 定义"怎么做":
@@ -78,13 +93,12 @@ AI 层 (Ollama 本地运行):
   • 约束: 全本地运行, 32K上下文, MVP≤10万文本块
 
 
-七、tasks.md 记录了哪些内容
+五、tasks.md 记录了哪些内容
 ---------------------------
 
 任务分解, 定义"谁先做":
 
   • 7个阶段, 62个任务:
-
     Phase 1 Setup (6任务)        初始化项目结构
     Phase 2 Foundational (5任务) 核心基础设施     ← 阻塞所有后续
     Phase 3 US1 (14任务)         研报上传与索引
@@ -96,6 +110,69 @@ AI 层 (Ollama 本地运行):
   • MVP = Phase 1~4 (38任务): 上传→提问→拿带来源的回答
   • 标有[P]的任务可并行开发
   • 每个阶段结束有关键检查点
+
+
+六、Speckit Skills 用途
+-----------------------
+
+该项目使用 Speckit 方法论进行规范驱动开发(Spec-Driven Development),
+以下 skills 定义在 .claude/skills/speckit-*/SKILL.md 中:
+
+  speckit-specify         根据自然语言描述创建/更新功能规格说明书 (spec.md)
+  speckit-clarify         识别规格中不明确的地方, 提出追问并完善 spec.md
+  speckit-constitution    创建/更新项目宪法(开发规范与原则), 保持模板同步
+  speckit-plan            执行设计方案工作流, 生成 plan.md 等技术文档
+  speckit-tasks           根据已有设计文档生成按依赖排序的可执行任务清单
+  speckit-taskstoissues   将任务清单转换为 GitHub Issues
+  speckit-checklist       为当前特性生成自定义检查清单
+  speckit-analyze         对 spec.md / plan.md / tasks.md 做一致性分析
+  speckit-implement       按 tasks.md 中的任务顺序逐一实现
+  speckit-converge        评估代码与文档的差异, 将未完成的工作追加到 tasks.md
+
+
+七、Superpowers Skills 用途
+---------------------------
+
+Superpowers 是 Claude Code 提供的一套流程性技能, 用于提升开发效率:
+
+  头脑风暴(brainstorming)
+      在创意工作前探索用户意图、需求与设计
+
+  系统调试(systematic-debugging)
+      遇到bug/测试失败时, 先系统排查再提出修复
+
+  测试驱动开发(test-driven-development)
+      先写测试再写实现
+
+  编写方案(writing-plans)
+      编写实现方案文档
+
+  执行方案(executing-plans)
+      在独立session中按方案执行, 带审查检查点
+
+  子代理驱动开发(subagent-driven-development)
+      当前会话中执行独立任务的实现方案
+
+  分发并行代理(dispatching-parallel-agents)
+      同时处理多个无共享依赖的独立任务
+
+  请求代码评审(requesting-code-review)
+      完成实现后请求代码审查
+
+  接收代码评审(receiving-code-review)
+      收到审查反馈后, 先验证再实施
+
+  完成开发分支(finishing-a-development-branch)
+      实现完成后决定合并/PR/清理
+
+  验证-完成前(verification-before-completion)
+      完成前验证工作是否达标
+
+  使用 git worktrees(using-git-worktrees)
+      在隔离 worktree 中开发
+
+  编写 skills(writing-skills)
+      编写自定义 skill
 
 
 八、一句话总结
