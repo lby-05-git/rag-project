@@ -1,37 +1,70 @@
 企业研报智能问答系统 — 技术讲解提纲
 ========================================
 
+> 根据行业 RAG 项目常见实践整理，本系统采用"标准/线性 RAG 架构"模式
 
-一、前端与后端文件构成
-----------------------
 
-【后端文件】backend/app/
-  ├── main.py              FastAPI 入口, 路由定义, CORS, 生命周期
-  ├── config.py            配置管理 (pydantic-settings, 从 .env 加载)
-  ├── document_loader.py   PDF解析 (PyMuPDF) + 文本分块 (RecursiveSplitter)
-  ├── rag_chain.py         RAG核心链: retrieve() → build_prompt() → generate()
-  ├── vector_store.py      FAISS向量库: create/save/load + Ollama嵌入
-  ├── schemas/api.py       Pydantic请求/响应模型 (QueryRequest, UploadResponse等)
-  ├── models/__init__.py   数据模型包
-  ├── routers/__init__.py  路由包
-  └── services/__init__.py 服务层包
+一、前端与后端构成（行业实践 + 本项目）
+--------------------------------------
 
-【前端文件】frontend/src/
-  ├── App.tsx              主应用布局 (侧边栏导航 + 页面路由)
-  ├── main.tsx             入口文件
-  ├── api/client.ts        axios API 客户端
-  ├── pages/
-  │   ├── ReportsPage.tsx  研报管理页面
-  │   └── HistoryPage.tsx  历史记录页面
-  ├── components/
-  │   ├── ChatPanel.tsx    问答对话面板 (消息列表 + 输入框)
-  │   ├── ParameterPanel.tsx 参数调节面板 (chunk_size + threshold滑块)
-  │   ├── ReportUploader.tsx 研报上传组件
-  │   ├── ReportList.tsx   研报列表组件
-  │   ├── UploadModal.tsx  上传弹窗
-  │   ├── SourceCitation.tsx 来源引用展示
-  │   └── HistoryList.tsx  历史记录列表
-  └── styles/global.css    全局样式
+【行业常见的 RAG 技术栈】
+
+  前端层:
+    原型阶段: Streamlit (Python, 快速出Demo)
+    生产阶段: Next.js / React / Vue 3 + Vite (企业级应用)
+    本项目:   React 19 + TypeScript + Vite + Ant Design 5
+
+  后端层:
+    原型阶段: Flask (较旧), FastAPI (主流)
+    生产阶段: FastAPI (主流) / Gin-Go (高性能场景)
+    本项目:   FastAPI + Uvicorn (异步高性能)
+
+  AI 编排:
+    简单流水线: LangChain (链式调用, 本项目采用)
+    复杂工作流: LangGraph (多步/有状态Agent)
+    本项目:     LangChain (5阶段线性流水线: PDF→分块→嵌入→检索→生成)
+
+  向量存储:
+    轻量本地: FAISS / ChromaDB (原型和中小规模)
+    生产环境: Qdrant / Milvus / pgvector
+    本项目:   FAISS (IndexFlatL2, 本地索引, 无需独立服务)
+
+  LLM 调用:
+    商业API: OpenAI / Claude / Gemini
+    本地部署: Ollama (运行开源模型)
+    本项目:   Ollama (Qwen2.5:0.5b + bge-large-zh-v1.5, 全本地)
+
+【本项目具体文件清单】
+
+  后端文件 backend/app/:
+    main.py              FastAPI 入口, 路由定义, CORS, 生命周期
+    config.py            配置管理 (pydantic-settings, 从 .env 加载)
+    document_loader.py   PDF解析 (PyMuPDF) + 文本分块 (RecursiveSplitter)
+    rag_chain.py         RAG核心链: retrieve() → build_prompt() → generate()
+    vector_store.py      FAISS向量库: create/save/load + Ollama嵌入
+    schemas/
+    └── api.py           Pydantic请求/响应模型 (QueryRequest, UploadResponse等)
+
+  前端文件 frontend/src/:
+    App.tsx              主应用布局 (侧边栏导航 + 页面路由)
+    main.tsx             入口文件
+    api/client.ts        axios API 客户端
+    pages/
+    ├── ReportsPage.tsx  研报管理页面
+    └── HistoryPage.tsx  历史记录页面
+    components/
+    ├── ChatPanel.tsx    问答对话面板 (消息列表 + 输入框)
+    ├── ParameterPanel.tsx 参数调节面板 (chunk_size + threshold滑块)
+    ├── ReportUploader.tsx 研报上传拖拽组件
+    ├── ReportList.tsx   研报列表表格组件
+    ├── UploadModal.tsx  上传弹窗
+    ├── SourceCitation.tsx 来源引用标注组件
+    └── HistoryList.tsx  历史记录列表组件
+    styles/global.css    全局样式
+
+  架构模式: 标准/线性 RAG
+    用户 → React前端 → FastAPI后端 → FAISS检索 → Ollama生成 → 前端展示
+    数据全程本地, 不经过第三方服务
 
 
 二、RAG 项目用到的技术栈
